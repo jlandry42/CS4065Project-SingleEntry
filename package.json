@@ -2,8 +2,10 @@
   "name": "cs4065project",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://jkan635.github.io/CS4065Project-SingleEntry/",
   "dependencies": {
     "@material-ui/core": "^3.9.2",
+    "gh-pages": "^2.0.1",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
     "react-scripts": "2.1.5",
@@ -12,6 +14,8 @@
     "txtgen": "^2.2.2"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
