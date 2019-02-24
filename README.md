@@ -1,4 +1,5 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# CS4065Project-SingleEntry
+On startup a random sentence will be generated, the user can input the sentence with the virtual keyboard and click enter. It will compare the actual string with the input string and give the degree of similarity
 
 ## Available Scripts
 
@@ -66,4 +67,3 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
-# CS4065Project-SingleEntry
