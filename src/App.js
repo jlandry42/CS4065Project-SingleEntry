@@ -3,6 +3,10 @@ import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
 import './App.css';
 import Input from '@material-ui/core/Input';
+import Handsfree from 'handsfree';
+
+let handsfree = undefined;
+let isSwipeMode = false;
 
 class App extends Component {
   state = {
@@ -19,6 +23,13 @@ class App extends Component {
   stringSimilarity = require('string-similarity');
   similarity = "";
   enterClicked = false;
+
+  constructor(props) {
+      super(props);
+      this.handsfreeMouseDown = this.handsfreeMouseDown.bind(this);
+      this.handsfreeMouseDrag = this.handsfreeMouseDrag.bind(this);
+      this.handsfreeMouseUp = this.handsfreeMouseUp.bind(this);
+  }
 
   onChange = input => {
     this.setState({
@@ -53,6 +64,101 @@ class App extends Component {
    this.enterClicked = true;
    alert("The text you entered has a "+this.similarity+" degree of similarity" );
  };
+
+  componentDidMount() {
+      if (typeof handsfree === 'undefined') {
+          const config = {
+              debug: false,
+              hideCursor: false,
+              settings: {
+                  maxPoses: 1,
+                  sensitivity: {
+                      xy: 1,
+                      click: 0.2,
+                  },
+                  stabilizer: {
+                      factor: 1,
+                      // Number of frames to stabilizer over
+                      buffer: 30, //TODO may need to be 60...
+                  },
+                  webcam: {
+                      //TODO actually set the real values for the camera
+                      video: {
+                          width: 640,
+                          height: 480,
+                      }
+                  },
+                  tracker: {
+                      posenet: {
+                          // - Set multiplier to a smaller value to increase speed at the cost of accuracy.
+                          // - Possible values [0.5, 0.75, 1.0, 1.01]
+                          multiplier: 0.75,
+
+                          // A number between 0.2 and 1.0 representing what to scale the image by before feeding it through the network
+                          // - Set this number lower to scale down the image and increase the speed when feeding through the network at the cost of accuracy.
+                          imageScaleFactor: 0.4,
+
+                          // The minimum overall confidence score required for the a pose/person to be detected.
+                          minPoseConfidence: 0.1,
+
+                          // The minimum confidence score for an individual keypoint, like the nose or a shoulder, to be detected.
+                          minPartConfidence: 0.5,
+
+                          // - The higher the number, the faster the performance but slower the accuracy
+                          // - Possible values [8, 16, 32]
+                          outputStride: 16,
+
+                          // - Two parts suppress each other if they are less than nmsRadius pixels away
+                          nmsRadius: 20,
+
+                          // Only return instance detections that have root part score greater or equal to this value.
+                          scoreThreshold: 0.5,
+                      },
+                  },
+              },
+          };
+          handsfree = new Handsfree(config);
+          handsfree.start();
+      }
+
+
+      window.addEventListener('handsfree:mouseDown', this.handsfreeMouseDown);
+      window.addEventListener('handsfree:mouseDrag', this.handsfreeMouseDrag);
+      window.addEventListener('handsfree:mouseUp', this.handsfreeMouseUp);
+  }
+
+  componentWillUnmount() {
+      window.removeEventListener('handsfree:mouseDown', this.handsfreeMouseDown);
+      window.removeEventListener('handsfree:mouseDrag', this.handsfreeMouseDrag);
+      window.removeEventListener('handsfree:mouseUp', this.handsfreeMouseUp);
+  }
+
+  handsfreeMouseDown = (ev) => {
+      // Called the first frame that a face clicks
+
+      const face = ev.detail.face;
+      const faceIndex = ev.detail.faceIndex;
+
+      if(isSwipeMode) {
+
+      } else {
+          handsfree.triggerClick(face, faceIndex);
+      }
+  };
+
+  handsfreeMouseDrag = (ev) => {
+      // Called every frame after a face clicks and is still in "click mode"
+
+      // const face = ev.detail.face;
+      // const faceIndex = ev.detail.faceIndex;
+  };
+
+  handsfreeMouseUp = (ev) => {
+      // Called when a face releases a click
+
+      // const face = ev.detail.face;
+      // const faceIndex = ev.detail.faceIndex;
+  };
 
   render() {
     return (
